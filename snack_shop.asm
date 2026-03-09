@@ -21,11 +21,11 @@ msgMenu          DB  "1) Add Items     2) Apply Discount", 0Dh, 0Ah
 msgBadChoice     DB  0Dh, 0Ah, "Invalid choice (1-5 only).", 0Dh, 0Ah, "$"
 
 msgSnackMenu     DB  0Dh, 0Ah, "Select snack:", 0Dh, 0Ah
-                 DB  "1) Chips   $1.50", 0Dh, 0Ah
-                 DB  "2) Soda    $2.00", 0Dh, 0Ah
-                 DB  "3) Candy   $1.00  (Buy 2 Get 1 Free!)", 0Dh, 0Ah
-                 DB  "4) Cookie  $1.25", 0Dh, 0Ah
-                 DB  "Choice: $"
+                 DB  "1) Chips   1.50", 0Dh, 0Ah
+                 DB  "2) Soda    2.00", 0Dh, 0Ah
+                 DB  "3) Candy   1.00  (Buy 2 Get 1 Free!)", 0Dh, 0Ah
+                 DB  "4) Cookie  1.25", 0Dh, 0Ah
+                 DB  "Choice: "
 msgQtyPrompt     DB  0Dh, 0Ah, "Quantity (1-9): $"
 msgAdded         DB  0Dh, 0Ah, "Item(s) added.", 0Dh, 0Ah, "$"
 msgBadSnack      DB  0Dh, 0Ah, "Invalid snack (1-4). Try again.", 0Dh, 0Ah, "$"
@@ -36,10 +36,10 @@ msgDiscAlready   DB  0Dh, 0Ah, "Discount already applied.", 0Dh, 0Ah, "$"
 msgDiscTooLow    DB  0Dh, 0Ah, "Need at least 1000 cents ($10) to discount.", 0Dh, 0Ah, "$"
 
 msgReceiptHdr    DB  0Dh, 0Ah, "--- RECEIPT ---", 0Dh, 0Ah, "$"
-msgItems         DB  "Total items: $"
+msgItems         DB  "Total items: "
 msgDiscYes       DB  "Discount: YES", 0Dh, 0Ah, "$"
 msgDiscNo        DB  "Discount: NO", 0Dh, 0Ah, "$"
-msgTotal         DB  "Final total: $"
+msgTotal         DB  "Final total: "
 msgCents         DB  " cents", 0Dh, 0Ah, "$"
 msgCleared       DB  0Dh, 0Ah, "Cart cleared.", 0Dh, 0Ah, "$"
 
