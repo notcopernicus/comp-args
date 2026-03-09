@@ -13,4 +13,13 @@ How to run (macOS)
   TASM/TLINK: tasm snack_shop.asm tlink snack_shop.obj snack_shop.exe
   MASM/LINK: masm snack_shop.asm link snack_shop.obj snack_shop.exe
 5.Run:
-snack_shop.exe
+snack_shop.asm
+
+:)
+
+SCREEN SHOTS AS TEST EVIDENCE
+
+<img width="555" height="638" alt="Screenshot 2026-03-09 at 12 21 33" src="https://github.com/user-attachments/assets/ef806cca-29b6-4d6c-b0ec-83f812d4db40" />
+
+<img width="547" height="634" alt="Screenshot 2026-03-09 at 12 23 00" src="https://github.com/user-attachments/assets/1b296941-ec1a-4a7f-a0e6-c647c9816bfc" />
+
