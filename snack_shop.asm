@@ -54,7 +54,7 @@ MainLoop:
     CALL ReadInt
 
     CMP  AX, 1
-    JE   DoAdd£
+    JE   DoAdd          
     CMP  AX, 2
     JE   DoDiscount
     CMP  AX, 3
@@ -90,12 +90,14 @@ DoExit:
 
 MAIN ENDP
 
+; ---------------------------------------------------
 PrintString PROC
     MOV  AH, 09h
     INT  21h
     RET
 PrintString ENDP
 
+; ---------------------------------------------------
 ReadInt PROC
 ReadLoop:
     MOV  AH, 01h
@@ -109,6 +111,7 @@ ReadLoop:
     RET
 ReadInt ENDP
 
+; ---------------------------------------------------
 ShowMenu PROC
     MOV  DX, OFFSET msgTitle
     CALL PrintString
@@ -117,6 +120,7 @@ ShowMenu PROC
     RET
 ShowMenu ENDP
 
+; ---------------------------------------------------
 AddItems PROC
 SnackLoop:
     MOV  DX, OFFSET msgSnackMenu
@@ -140,32 +144,47 @@ QtyLoop:
     CMP  CX, 9
     JA   BadQty
 
+    ; FIX 2: Each Price label on its own line (TASM forbids code after label on same line)
     CMP  BX, 1
     JE   Price1
     CMP  BX, 2
     JE   Price2
     CMP  BX, 3
     JE   Price3
-    MOV  DX, PRICE_COOKIE
+    MOV  SI, PRICE_COOKIE
     JMP  CalcCost
 
-Price1: MOV  DX, PRICE_CHIPS   JMP  CalcCost
-Price2: MOV  DX, PRICE_SODA    JMP  CalcCost
-Price3: MOV  DX, PRICE_CANDY
+Price1:
+    MOV  SI, PRICE_CHIPS
+    JMP  CalcCost
+
+Price2:
+    MOV  SI, PRICE_SODA
+    JMP  CalcCost
+
+Price3:
+    MOV  SI, PRICE_CANDY
 
 CalcCost:
-    MOV  SI, CX
+    PUSH BX             ; SAVE snack choice - DIV will destroy BX
+    MOV  DI, CX         ; DI = quantity (safe register, untouched by DIV)
+
     CMP  BX, 3
     JNE  NoPromo
-    MOV  AX, SI
+    ; Buy 2 Get 1 Free: subtract (qty DIV 3) free items from qty
+    MOV  AX, CX
     MOV  BX, 3
     XOR  DX, DX
-    DIV  BX
-    SUB  SI, AX
+    DIV  BX             ; AX = qty/3 (free items) - BX destroyed here, but saved on stack
+    MOV  DI, CX
+    SUB  DI, AX         ; DI = qty - free items (items to charge for)
 
 NoPromo:
-    MOV  AX, DX
-    MUL  SI
+    POP  BX             ; RESTORE snack choice
+    ; Cost = price (SI) * charged qty (DI)
+    MOV  AX, SI
+    MOV  DX, DI         ; move qty into DX for MUL (MUL cannot use DI directly in 16-bit)
+    MUL  DX             ; AX = price * qty
     ADD  AX, totalCost
     MOV  totalCost, AX
 
@@ -188,6 +207,7 @@ BadQty:
 
 AddItems ENDP
 
+; ---------------------------------------------------
 ApplyDiscount PROC
     CMP  discountApplied, 1
     JE   Already
@@ -202,5 +222,77 @@ ApplyDiscount PROC
     MOV  DX, OFFSET msgDiscApplied
     CALL PrintString
     RET
+
 Already:
     MOV  DX, OFFSET msgDiscAlready
+    CALL PrintString
+    RET
+
+TooLow:
+    MOV  DX, OFFSET msgDiscTooLow
+    CALL PrintString
+    RET
+
+ApplyDiscount ENDP      ; FIX 4: This ENDP was completely missing
+
+; ---------------------------------------------------
+PrintReceipt PROC
+    MOV  DX, OFFSET msgReceiptHdr
+    CALL PrintString
+
+    MOV  DX, OFFSET msgItems
+    CALL PrintString
+    MOV  AX, itemCount
+    CALL PrintNum
+
+    CMP  discountApplied, 1
+    JE   ShowYes
+    MOV  DX, OFFSET msgDiscNo
+    CALL PrintString
+    JMP  ShowTotal
+ShowYes:
+    MOV  DX, OFFSET msgDiscYes
+    CALL PrintString
+
+ShowTotal:
+    MOV  DX, OFFSET msgTotal
+    CALL PrintString
+    MOV  AX, totalCost
+    CALL PrintNum
+    MOV  DX, OFFSET msgCents
+    CALL PrintString
+    RET
+PrintReceipt ENDP
+
+; ---------------------------------------------------
+ClearCart PROC
+    MOV  totalCost, 0
+    MOV  itemCount, 0
+    MOV  discountApplied, 0
+    MOV  DX, OFFSET msgCleared
+    CALL PrintString
+    RET
+ClearCart ENDP
+
+; ---------------------------------------------------
+; PrintNum: prints value in AX as decimal digits
+PrintNum PROC
+    MOV  BX, 10
+    MOV  CX, 0
+DivLoop:
+    XOR  DX, DX
+    DIV  BX
+    PUSH DX
+    INC  CX
+    CMP  AX, 0
+    JNE  DivLoop
+PrintLoop:
+    POP  DX
+    ADD  DL, '0'
+    MOV  AH, 02h
+    INT  21h
+    LOOP PrintLoop
+    RET
+PrintNum ENDP
+
+END MAIN
