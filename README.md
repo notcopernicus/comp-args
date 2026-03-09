@@ -22,3 +22,4 @@ SCREEN SHOTS AS TEST EVIDENCE
 
 <img width="547" height="634" alt="Screenshot 2026-03-09 at 12 23 00" src="https://github.com/user-attachments/assets/1b296941-ec1a-4a7f-a0e6-c647c9816bfc" />
 
+note: DOS is an emulator, assembly is a programming language, TASM/MASM is a compiler
